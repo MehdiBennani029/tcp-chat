@@ -1,0 +1,159 @@
+.login-pane,
+.chat-pane {
+    -fx-background-color: #f3f4f6;
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-size: 13px;
+}
+
+.login-pane {
+    -fx-background-color: white;
+    -fx-padding: 32;
+}
+
+.title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #111827;
+}
+
+.muted {
+    -fx-text-fill: #6b7280;
+}
+
+.notice-error {
+    -fx-text-fill: #b91c1c;
+    -fx-font-weight: bold;
+}
+
+.notice-info {
+    -fx-text-fill: #1d4ed8;
+}
+
+.text-field,
+.text-area {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #d1d5db;
+    -fx-background-color: white;
+    -fx-padding: 6 10;
+}
+
+.text-field:focused,
+.text-area:focused {
+    -fx-border-color: #2563eb;
+}
+
+.text-area .content {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+}
+
+.button {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 8 18;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #1d4ed8;
+}
+
+.button:disabled {
+    -fx-background-color: #9ca3af;
+    -fx-opacity: 0.8;
+}
+
+.button.leave {
+    -fx-background-color: #dc2626;
+}
+
+.button.leave:hover {
+    -fx-background-color: #b91c1c;
+}
+
+/* ---- header ---- */
+.header {
+    -fx-background-color: #1e3a8a;
+    -fx-padding: 12 16;
+    -fx-alignment: center-left;
+}
+
+.status-text {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.who {
+    -fx-text-fill: #dbeafe;
+}
+
+.badge-readonly {
+    -fx-background-color: #f59e0b;
+    -fx-text-fill: #1f2937;
+    -fx-font-weight: bold;
+    -fx-padding: 3 10;
+    -fx-background-radius: 12;
+}
+
+.status-dot.online {
+    -fx-fill: #22c55e;
+    -fx-effect: dropshadow(gaussian, #22c55e, 8, 0.4, 0, 0);
+}
+
+.status-dot.offline {
+    -fx-fill: #ef4444;
+}
+
+/* ---- messages ---- */
+.message-list {
+    -fx-background-color: transparent;
+    -fx-padding: 6 0;
+}
+
+.message-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 3 10;
+    -fx-font-size: 14px;
+}
+
+.message-list .list-cell.cell-other {
+    -fx-background-color: white;
+    -fx-background-insets: 3 80 3 8;
+    -fx-background-radius: 10;
+    -fx-border-color: #e5e7eb;
+    -fx-border-insets: 3 80 3 8;
+    -fx-border-radius: 10;
+    -fx-padding: 9 90 9 18;
+    -fx-text-fill: #111827;
+}
+
+.message-list .list-cell.cell-own {
+    -fx-background-color: #dbeafe;
+    -fx-background-insets: 3 8 3 80;
+    -fx-background-radius: 10;
+    -fx-padding: 9 18 9 90;
+    -fx-alignment: top-right;
+    -fx-text-alignment: right;
+    -fx-text-fill: #1e3a8a;
+}
+
+.message-list .list-cell.cell-info {
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+    -fx-text-fill: #6b7280;
+    -fx-font-style: italic;
+    -fx-font-size: 12px;
+}
+
+/* ---- composer ---- */
+.composer {
+    -fx-padding: 10 14 14 14;
+    -fx-background-color: #e5e7eb;
+}
+
+.button.send {
+    -fx-padding: 8 24;
+}

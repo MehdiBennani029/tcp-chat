@@ -1,0 +1,57 @@
+@startuml deployment-diagram
+title TCP Group Chat - Deployment Diagram
+skinparam shadowing false
+skinparam node {
+  BackgroundColor #F9FAFB
+  BorderColor #374151
+}
+skinparam artifact {
+  BackgroundColor #DBEAFE
+  BorderColor #1D4ED8
+}
+skinparam file {
+  BackgroundColor #FEF3C7
+  BorderColor #B45309
+}
+
+node "Server machine\n(IP e.g. 192.168.1.10)" as srv <<physical node>> {
+  node "JVM 21 (virtual threads)" as srvjvm <<execution environment>> {
+    artifact "TCPServer.jar\n(JavaFX GUI + ChatServer)" as srvjar
+  }
+  file "server.properties\nserver.address=0.0.0.0\nserver.port=3000" as srvcfg
+  srvjar .. srvcfg : reads at start-up
+}
+
+node "Client machine 1" as c1 <<physical node>> {
+  node "JVM 21" as c1jvm <<execution environment>> {
+    artifact "TCPClient.jar\n(JavaFX GUI + ChatClient)" as c1jar
+  }
+  file "client.properties" as c1cfg
+  c1jar .. c1cfg
+}
+
+node "Client machine 2" as c2 <<physical node>> {
+  node "JVM 21" as c2jvm <<execution environment>> {
+    artifact "TCPClient.jar" as c2jar
+  }
+  file "client.properties" as c2cfg
+  c2jar .. c2cfg
+}
+
+node "Client machine N\n(read-only observers too)" as cn <<physical node>> {
+  node "JVM 21" as cnjvm <<execution environment>> {
+    artifact "TCPClient.jar" as cnjar
+  }
+}
+
+c1jar -[#2563EB,thickness=2]-> srvjar : TCP/IP  port 3000\n(java TCPClient <ip> 3000)
+c2jar -[#2563EB,thickness=2]-> srvjar : TCP/IP  port 3000
+cnjar -[#2563EB,thickness=2]-> srvjar : TCP/IP  port 3000
+
+note bottom of srv
+  The server accepts many concurrent connections;
+  each one gets its own virtual threads.
+  Messages are formatted (time + username) on the server
+  and distributed to every active connection.
+end note
+@enduml

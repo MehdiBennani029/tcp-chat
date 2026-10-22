@@ -1,0 +1,66 @@
+.root-pane {
+    -fx-background-color: #f3f4f6;
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-size: 13px;
+}
+
+.header {
+    -fx-background-color: #111827;
+    -fx-padding: 14 18;
+    -fx-alignment: center-left;
+}
+
+.title {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.header .label {
+    -fx-text-fill: #e5e7eb;
+}
+
+.header .title {
+    -fx-text-fill: white;
+}
+
+.status-dot.online {
+    -fx-fill: #22c55e;
+    -fx-effect: dropshadow(gaussian, #22c55e, 8, 0.4, 0, 0);
+}
+
+.status-dot.offline {
+    -fx-fill: #ef4444;
+}
+
+.section-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #374151;
+}
+
+.user-list {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #d1d5db;
+    -fx-border-radius: 8;
+    -fx-padding: 4 8;
+}
+
+.user-list .list-cell {
+    -fx-font-size: 14px;
+    -fx-background-color: transparent;
+}
+
+.user-list .list-cell:empty {
+    -fx-background-color: transparent;
+}
+
+.log-area {
+    -fx-font-family: "Consolas", "DejaVu Sans Mono", monospace;
+    -fx-font-size: 12px;
+}
+
+.log-area .content {
+    -fx-background-radius: 8;
+}

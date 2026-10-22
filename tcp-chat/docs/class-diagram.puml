@@ -1,0 +1,188 @@
+@startuml class-diagram
+title TCP Group Chat - Class Diagram
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #374151
+  ArrowColor #374151
+}
+skinparam package {
+  BorderColor #9CA3AF
+}
+hide empty members
+
+package "TCPServer (Maven project)" {
+
+  class TCPServer <<launcher>> {
+    + {static} main(args : String[])
+  }
+
+  package "com.chat.server.view  (JavaFX - View)" #F3F4F6 {
+    class ServerApp {
+      - users : ObservableList<String>
+      - userColors : Map<String, Color>
+      - logArea : TextArea
+      + start(stage : Stage)
+      + stop()
+      - randomColorFor(user : String) : Color
+      + onServerStarted(address, port)
+      + onServerStopped()
+      + onLog(message)
+      + onUserJoined(username)
+      + onUserLeft(username)
+    }
+  }
+
+  package "com.chat.server.model  (no JavaFX - Model)" #EFF6FF {
+    interface ServerListener <<interface>> {
+      + onServerStarted(address : String, port : int)
+      + onServerStopped()
+      + onLog(message : String)
+      + onUserJoined(username : String)
+      + onUserLeft(username : String)
+    }
+
+    class ChatServer {
+      - connections : Set<ClientHandler>
+      - users : Map<String, ClientHandler>
+      - executor : ExecutorService  <<virtual threads>>
+      - running : boolean
+      + start()
+      + stop()
+      + isRunning() : boolean
+      + getPort() : int
+      - acceptLoop()
+      ~ registerUser(name, handler) : boolean
+      ~ userJoined(handler)
+      ~ disconnected(handler)
+      ~ chat(sender, text)
+      ~ broadcast(line)
+      ~ userNames() : List<String>
+    }
+
+    class ClientHandler <<Runnable>> {
+      - socket : Socket
+      - outbox : BlockingQueue<String>
+      - username : String
+      - joined : boolean
+      + run()
+      - handshake(in) : boolean
+      - handle(line) : boolean
+      ~ send(line)
+      ~ finish(lastLine)
+      - writeLoop()
+    }
+
+    class ServerConfig <<record>> {
+      + bindAddress : String
+      + port : int
+      + {static} load() : ServerConfig
+    }
+
+    class Protocol <<utility>> {
+      + {static} frame(cmd, payload) : String
+      + {static} split(line) : String[]
+      + {static} escape(s) : String
+      + {static} unescape(s) : String
+    }
+  }
+}
+
+package "TCPClient (Maven project)" {
+
+  class TCPClient <<launcher>> {
+    + {static} main(args : String[])
+  }
+
+  package "com.chat.client.view  (JavaFX - View)" #F3F4F6 {
+    class ClientApp {
+      - config : ClientConfig
+      - client : ChatClient
+      + start(stage : Stage)
+      + stop()
+      - showLogin(notice, isError)
+      - connect(username, ...)
+      - showChat(client : ChatClient)
+    }
+
+    class MessageCell <<ListCell>>
+    class ChatLine <<record>> {
+      + kind : OWN | OTHER | INFO
+      + text : String
+    }
+  }
+
+  package "com.chat.client.model  (no JavaFX - Model)" #EFF6FF {
+    interface ChatListener <<interface>> {
+      + onMessage(sender : String, formatted : String)
+      + onInfo(text : String)
+      + onUserList(usernames : List<String>)
+      + onDisconnected(reason : String)
+    }
+
+    class ChatClient {
+      - socket : Socket
+      - mode : CHAT | READ_ONLY
+      - username : String
+      - sender : ExecutorService
+      + connect(username : String)
+      + startListening()
+      + sendUserInput(raw : String)
+      + disconnect()
+      + setListener(l : ChatListener)
+      + isReadOnly() : boolean
+    }
+
+    class ClientConfig <<record>> {
+      + host : String
+      + port : int
+      + {static} resolve(args : String[]) : ClientConfig
+    }
+
+    class ConnectionRejectedException
+    class "Protocol" as ClientProtocol <<utility>>
+  }
+}
+
+' ---- server relations
+TCPServer ..> ServerApp : launches
+ServerApp ..|> ServerListener
+ServerApp --> ChatServer : creates / stop()
+ChatServer --> ServerListener : notifies
+ChatServer --> ServerConfig
+ChatServer "1" o-- "0..*" ClientHandler : serves
+ClientHandler --> ChatServer : callbacks
+ClientHandler ..> Protocol
+ChatServer ..> Protocol
+
+' ---- client relations
+TCPClient ..> ClientApp : launches
+ClientApp --> ChatClient
+ClientApp ..> ChatListener : implements (anonymous)
+ClientApp ..> ClientConfig
+ClientApp +-- MessageCell
+MessageCell ..> ChatLine
+ChatClient --> ChatListener : notifies
+ChatClient ..> ConnectionRejectedException : throws
+ChatClient ..> ClientProtocol
+ConnectionRejectedException --|> java.io.IOException
+
+' ---- network
+ClientHandler .[#2563EB,bold]. ChatClient : TCP / line protocol\n(JOIN, MSG, ALLUSERS, LEAVE / WELCOME, MSG, USERS, INFO, BYE)
+
+note bottom of ChatServer
+  Every accepted socket is served by virtual threads:
+  one reader (ClientHandler.run) and one writer (writeLoop)
+  per client, created with
+  Executors.newVirtualThreadPerTaskExecutor().
+end note
+
+note bottom of ClientApp
+  The view only renders ChatClient events through
+  ChatListener (Platform.runLater). The model packages
+  have no import of javafx.*.
+end note
+@enduml
